@@ -49,6 +49,7 @@ var cfg = struct {
 
 	prometheusURL string
 	influxdbURL   string
+	zmqListenAddr string
 }{}
 
 func init() {
@@ -163,6 +164,10 @@ func init() {
 	)
 
 	// Remote storage.
+	cfg.fs.StringVar(
+		&cfg.remote.ZmqListenAddr, "storage.remote.zmq-addr", "",
+		"The address to bind to for zeromq publishing of metrics. None, if empty.",
+	)
 	cfg.fs.StringVar(
 		&cfg.remote.OpentsdbURL, "storage.remote.opentsdb-url", "",
 		"The URL of the remote OpenTSDB server to send samples to. None, if empty.",

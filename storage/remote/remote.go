@@ -26,6 +26,7 @@ import (
 	"github.com/prometheus/prometheus/config"
 	"github.com/prometheus/prometheus/storage/remote/influxdb"
 	"github.com/prometheus/prometheus/storage/remote/opentsdb"
+	"github.com/prometheus/prometheus/storage/remote/zmq"
 )
 
 // Storage collects multiple remote storage queues.
@@ -63,6 +64,10 @@ func New(o *Options) *Storage {
 		prometheus.MustRegister(c)
 		s.queues = append(s.queues, NewStorageQueueManager(c, 100*1024))
 	}
+	if o.ZmqListenAddr != "" {
+		c := zmq.NewPublisher(o.ZmqListenAddr)
+		s.queues = append(s.queues, NewStorageQueueManager(c, 100*1024))
+	}
 	if len(s.queues) == 0 {
 		return nil
 	}
@@ -78,6 +83,7 @@ type Options struct {
 	InfluxdbPassword        string
 	InfluxdbDatabase        string
 	OpentsdbURL             string
+	ZmqListenAddr           string
 }
 
 // Run starts the background processing of the storage queues.
